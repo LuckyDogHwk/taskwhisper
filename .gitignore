@@ -1,0 +1,16 @@
+# Maven
+target/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Node / 前端
+node_modules/
+frontend/dist/
+
+# 杂项
+*.log
+.env
+.DS_Store
