@@ -66,6 +66,13 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- 接口文档：springdoc 3.x 是 Boot 4 路线（Knife4j 停在面向 Boot 3 的 4.5.0，弃用） -->
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+      <version>3.1.1</version>
+    </dependency>
+
     <!-- 测试 -->
     <dependency>
       <groupId>org.springframework.boot</groupId>

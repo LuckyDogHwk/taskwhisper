@@ -60,8 +60,10 @@ class SecurityConfigTest {
     }
 
     @Test
-    void rootPathIsPermittedReturns404Not401() throws Exception {
+    void rootPathIsPermittedAndServesFrontendWithout401() throws Exception {
+        // 根路径在白名单内：静态前端入口（index.html）必须匿名可访问，
+        // 而不是被安全链拦成 401（前端未登录时先加载页面、由路由守卫跳转登录）
         mockMvc.perform(get("/"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk());
     }
 }

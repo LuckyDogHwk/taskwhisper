@@ -9,6 +9,8 @@ target/
 # Node / 前端
 node_modules/
 frontend/dist/
+# 单进程演示模式的构建产物（npm run build:demo 生成，不提交）
+src/main/resources/static/
 
 # 杂项
 *.log
