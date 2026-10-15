@@ -1,5 +1,6 @@
 package com.taskwhisper.mapper;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.taskwhisper.entity.Category;
@@ -64,8 +65,10 @@ class MapperSmokeTest {
         assertThat(readBack.getCategoryId()).isEqualTo(category.getId());
         assertThat(readBack.getDueTime()).isEqualTo(LocalDateTime.of(2026, 12, 31, 12, 0));
 
-        // 分页插件可用（mybatis-plus-jsqlparser 显式依赖的回归锚点）
-        Page<Task> page = taskMapper.selectPage(new Page<>(1, 10), null);
+        // 分页插件可用（mybatis-plus-jsqlparser 显式依赖的回归锚点）。
+        // 断言按当前用户过滤：同 context 的其他测试共享此 H2，全局总数不稳定
+        Page<Task> page = taskMapper.selectPage(new Page<>(1, 10),
+                new LambdaQueryWrapper<Task>().eq(Task::getUserId, user.getId()));
         assertThat(page.getTotal()).isEqualTo(1);
         assertThat(page.getRecords()).hasSize(1);
         assertThat(mybatisPlusInterceptor).isNotNull();
