@@ -9,6 +9,8 @@ import com.taskwhisper.dto.TaskCreateRequest;
 import com.taskwhisper.dto.TaskResponse;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 /**
  * AI 自然语言建任务（POST /api/tasks/nl，核心卖点）。
  * 流程：文本校验 → Key 配置检查（未配 503）→ DeepSeek 解析（上游失败 502）
@@ -49,7 +51,8 @@ public class NlTaskService {
             throw new BizException(ErrorCode.AI_NOT_CONFIGURED);
         }
 
-        String content = deepSeekClient.chatJson(NlTaskParser.SYSTEM_PROMPT, text);
+        // 注入当前日期：否则模型无法把「明天下午三点」换算成绝对时间（实测踩坑后修复）
+        String content = deepSeekClient.chatJson(nlTaskParser.systemPrompt(LocalDateTime.now()), text);
         NlTaskParser.ParsedTask parsed = nlTaskParser.parse(content);
 
         // 分类复用/新建：返回类型契约见 CategoryService.findOrCreate（Task 7）

@@ -50,6 +50,14 @@ class NlTaskParserTest {
     }
 
     @Test
+    void systemPromptInjectsCurrentDateAndWeekday() {
+        String prompt = parser.systemPrompt(LocalDateTime.of(2026, 10, 15, 9, 0));
+        assertThat(prompt).contains("今天是 2026-10-15");
+        assertThat(prompt).contains("星期四");
+        assertThat(prompt).contains(NlTaskParser.SYSTEM_PROMPT);
+    }
+
+    @Test
     void parsesIsoDueTime() {
         NlTaskParser.ParsedTask task = parser.parse("{\"title\":\"开会\",\"due_time\":\"2026-10-20T15:00:00\"}");
         assertThat(task.dueTime()).isEqualTo(LocalDateTime.of(2026, 10, 20, 15, 0, 0));

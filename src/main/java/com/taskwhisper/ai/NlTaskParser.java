@@ -42,6 +42,18 @@ public class NlTaskParser {
             用户提到的信息如实填入对应字段；用户没有提到的字段一律给 null。
             """;
 
+    /**
+     * 组装实际发送的系统提示词：注入当前日期（含星期）。
+     * 模型没有「今天」的上下文，不注入日期时无法把「明天/下周五/今晚八点」
+     * 这类相对时间换算成绝对日期，只能放弃填 due_time（真实调用实测踩坑）。
+     */
+    public String systemPrompt(LocalDateTime now) {
+        String today = now.format(DateTimeFormatter.ofPattern("uuuu-MM-dd EEEE", Locale.CHINA));
+        return SYSTEM_PROMPT + "\n\n当前时间信息：今天是 " + today + "。"
+                + "用户提到相对时间（明天、下周五、今晚八点、下周一等）时，"
+                + "必须换算成绝对日期时间填入 due_time。";
+    }
+
     /** 契约字段上限 */
     private static final int TITLE_MAX = 100;
     private static final int DESCRIPTION_MAX = 500;

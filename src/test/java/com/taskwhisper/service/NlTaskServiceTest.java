@@ -14,13 +14,16 @@ import com.taskwhisper.mapper.TaskMapper;
 import com.taskwhisper.mapper.UserMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -88,7 +91,12 @@ class NlTaskServiceTest {
         assertThat(task.getDueTime()).isEqualTo(LocalDateTime.of(2026, 10, 16, 15, 0, 0));
         assertThat(task.getCategoryId()).isNotNull();
 
-        verify(deepSeekClient).chatJson(eq(NlTaskParser.SYSTEM_PROMPT), eq("明天下午三点提醒我开会，高优先级"));
+        // 系统提示词必须注入当前日期（模型没有「今天」的上下文，无法换算「明天」这类相对时间）
+        ArgumentCaptor<String> promptCaptor = ArgumentCaptor.forClass(String.class);
+        verify(deepSeekClient).chatJson(promptCaptor.capture(), eq("明天下午三点提醒我开会，高优先级"));
+        String prompt = promptCaptor.getValue();
+        assertThat(prompt).contains(NlTaskParser.SYSTEM_PROMPT);
+        assertThat(prompt).contains(LocalDate.now().format(DateTimeFormatter.ofPattern("uuuu-MM-dd")));
     }
 
     @Test

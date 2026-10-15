@@ -81,7 +81,7 @@ cd frontend && npm run build:demo
 ## 测试
 
 ```bash
-mvn test   # 74 个测试全绿：Service/Controller/Security/NL 解析/统计 SQL 全链路，真实 H2 造数
+mvn test   # 75 个测试全绿：Service/Controller/Security/NL 解析/统计 SQL 全链路，真实 H2 造数
 ```
 
 ## 面试问答预案
@@ -111,6 +111,7 @@ DeepSeek 以 json 模式返回后，先过 NlTaskParser 校验（title 必填/�
 4. 请求体非 UTF-8 → Jackson 抛 HttpMessageNotReadable → 需映射 400 而非兜底 500
 5. STRICT 解析器 `yyyy`（纪元年）缺纪元拒绝解析 → `uuuu`
 6. 全局兜底异常处理器必须打日志——线上排障第一现场
+7. 模型解析不出「明天下午三点」——LLM 没有「今天」的上下文，无法换算相对时间；在系统提示词中注入当前日期（含星期）后，「下周一上午九点」也能精确落成绝对日期
 
 ## 诚实声明
 

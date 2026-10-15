@@ -260,3 +260,15 @@ git init && git add -A && git commit -m "feat: 项目骨架（Spring Boot 4.1 + 
 - Spec 覆盖：§2 技术栈→Task 0/1/11；§3 功能→Task 6/7/8/9/13；§4 数据模型→Task 3 schema.sql；§5 API→Task 10；§6 AI→Task 9；§7 前端→Task 12/13/14；§9 测试→各 Task 测试文件；§10 环境→Task 0；§12 交付标准→Task 14/15。无缺口。
 - 类型一致性：Result/PageResponse/ErrorCode/BizException 在 Task 2 定义，Task 4+ 引用；CategoryService.findOrCreate 在 Task 7 定义、Task 9 引用；JwtService.parse 返回 userId，Task 10 从 Authentication principal 取 userId（principal 为 userId 字符串，Task 5 装载时约定）。
 - 无占位符：所有枚举值、错误码、路径、版本号均为具体值。
+
+---
+
+## 执行记录（2026-10-15 完成）
+
+- Task 0-3：环境（JDK 21.0.12.1/Maven 3.9.16/MySQL 8.0.46 免安装版，Tools\ 目录，start-mysql.bat）+ 骨架 + 公共层，主会话执行，6 测试全绿
+- Task 4-9 + 12-13：5 路并行 workflow（鉴权/任务+分类/统计/AI/前端），契约锁定，agent 不跑 mvn 防 target 冲突；集成后修 3 处：yyyy→uuuu（STRICT 纪元年坑）、@AutoConfigureMockMvc 包迁移（Boot 4 → spring-boot-webmvc-test）、/error 白名单 + NoResourceFound→404 + HttpMessageNotReadable→400 + 兜底异常打日志
+- Task 10：Controller + MockMvc 端到端测试（主会话）
+- Task 11：Knife4j 4.5.0 停在 Boot 3 → 按预案降级 springdoc-openapi 3.1.1
+- Task 14：真实 MySQL 全链路 curl 冒烟通过（中文落库/统计未分类桶/503 降级/GBK 400/数据隔离）；双模式验证（dev 5173 代理 + build:demo 单进程 8080）
+- Task 15：README（含 6 个真实踩坑 + 面试预案）✅；GitHub 推送 ⏳ 等用户建空仓 taskwhisper
+- 最终：**74 测试全绿**
