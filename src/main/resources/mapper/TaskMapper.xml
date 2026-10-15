@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  统计模块手写 XML 复杂 SQL（实现 TaskMapper 接口中声明的两个方法）。
+  面试锚点：GROUP BY 聚合、LEFT JOIN 保留未分类桶、ON 条件带 c.user_id 防跨用户泄漏。
+-->
+<mapper namespace="com.taskwhisper.mapper.TaskMapper">
+
+    <!-- 各状态任务计数，行形如 {status: "待办", cnt: 2} -->
+    <select id="countByStatus" resultType="map">
+        SELECT status, COUNT(*) AS cnt
+        FROM t_task
+        WHERE user_id = #{userId}
+        GROUP BY status
+    </select>
+
+    <!--
+      分类分布（含未分类桶）：
+      - LEFT JOIN 保留 category_id 为 NULL 的任务，桶的 category_id/name 为 null；
+      - ON 中的 c.user_id 条件：即使任务挂了他人分类的脏数据，也不会把对方分类名带进本用户结果；
+      - GROUP BY 两列：只按 t.category_id 分组而 c.name 未聚合，在部分数据库会直接报错。
+    -->
+    <select id="countByCategory" resultType="map">
+        SELECT t.category_id, c.name, COUNT(*) AS cnt
+        FROM t_task t
+        LEFT JOIN t_category c ON t.category_id = c.id AND c.user_id = #{userId}
+        WHERE t.user_id = #{userId}
+        GROUP BY t.category_id, c.name
+    </select>
+
+</mapper>

@@ -5,6 +5,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.stream.Collectors;
 
@@ -33,6 +34,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Result<Void>> handleIllegalArgument(IllegalArgumentException e) {
         return ResponseEntity.badRequest()
                 .body(Result.error(ErrorCode.BAD_REQUEST.code(), e.getMessage()));
+    }
+
+    /**
+     * 无对应处理器/静态资源（如 GET /）时 Spring MVC 抛出的 404 信号，
+     * 必须转成 404 而不是落入兜底 500。
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<Result<Void>> handleNoResource(NoResourceFoundException e) {
+        return ResponseEntity.status(ErrorCode.NOT_FOUND.code())
+                .body(Result.error(ErrorCode.NOT_FOUND));
     }
 
     @ExceptionHandler(Exception.class)

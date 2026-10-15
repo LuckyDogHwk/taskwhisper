@@ -77,6 +77,12 @@
       <artifactId>spring-security-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- Boot 4 把 MockMvc 测试自动配置拆成独立构件（@AutoConfigureMockMvc 在 org.springframework.boot.webmvc.test.autoconfigure 包） -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-webmvc-test</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
